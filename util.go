@@ -389,7 +389,7 @@ func isAddressable(expr Expr) bool {
 	expr = skipSuperfluousParens(expr)
 	switch n := expr.(type) {
 	case *Ident:
-		return n.source == envVar
+		return n.source == EnvVar
 	case *StarExpr:
 		return true
 	case *IndexExpr:
@@ -553,4 +553,3 @@ func equal(x, y reflect.Value) (bool, error) {
 		return x.Interface() == y.Interface(), nil
 	}
 }
-

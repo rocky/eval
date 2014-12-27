@@ -4,12 +4,12 @@ import (
 	"reflect"
 )
 
-type envSource int
+type EnvSource int
 const (
-	envUnknown envSource = iota
-	envVar
-	envFunc
-	envConst
+	EnvUnknown EnvSource = iota
+	EnvVar
+	EnvFunc
+	EnvConst
 )
 
 // A Environment used for evaluation

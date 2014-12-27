@@ -48,7 +48,7 @@ type Ident struct {
 	*ast.Ident
 	knownType
 	constValue
-	source envSource
+	source EnvSource
 }
 
 type Ellipsis struct {
@@ -709,4 +709,16 @@ func isTypeDisplayed(t reflect.Type) bool {
 		     return false
 	}
 	return true
+}
+
+func (id Ident) SetKnownType(t reflect.Type) {
+	id.knownType = knownType{t}
+}
+
+func (id Ident) SetConstValue(v reflect.Value) {
+	id.constValue = ConstValueOf(v)
+}
+
+func (id Ident) SetSource(s EnvSource) {
+	id.source = s
 }

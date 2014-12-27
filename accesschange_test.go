@@ -40,18 +40,18 @@ func myCheckIdent(ident *ast.Ident, env Env) (_ *Ident, errs []error) {
 		return aexpr, errs
 	} else if name[0] == 'v' {
 		aexpr.knownType = knownType{i8}
-		aexpr.source = envVar
+		aexpr.source = EnvVar
 		return aexpr, errs
 	} else if name[0] == 'c' {
 		aexpr.knownType = knownType{stringType}
-		aexpr.source = envConst
+		aexpr.source = EnvConst
 		return aexpr, errs
 	} else if name == "bogus" {
-		aexpr.source = envConst
+		aexpr.source = EnvConst
 		return aexpr, errs
 	} else {
 		aexpr.knownType = knownType{f32}
-		aexpr.source = envVar
+		aexpr.source = EnvVar
 		return aexpr, errs
 	}
 }

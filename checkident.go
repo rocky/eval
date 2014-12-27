@@ -23,11 +23,11 @@ func CheckIdent(ident *ast.Ident, env Env) (_ *Ident, errs []error) {
 		for searchEnv := env; searchEnv != nil; searchEnv = searchEnv.PopScope() {
 			if v := searchEnv.Var(aexpr.Name); v.IsValid() {
 				aexpr.knownType = knownType{v.Elem().Type()}
-				aexpr.source = envVar
+				aexpr.source = EnvVar
 				return aexpr, errs
 			} else if v := searchEnv.Func(aexpr.Name); v.IsValid() {
 				aexpr.knownType = knownType{v.Type()}
-				aexpr.source = envFunc
+				aexpr.source = EnvFunc
 				return aexpr, errs
 			} else if v := searchEnv.Const(aexpr.Name); v.IsValid() {
 				if n, ok := v.Interface().(*ConstNumber); ok {
@@ -36,7 +36,7 @@ func CheckIdent(ident *ast.Ident, env Env) (_ *Ident, errs []error) {
 					aexpr.knownType = knownType{v.Type()}
 				}
 				aexpr.constValue = constValue(v)
-				aexpr.source = envConst
+				aexpr.source = EnvConst
 				return aexpr, errs
 			}
 		}
