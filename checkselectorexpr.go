@@ -5,7 +5,7 @@ import (
 	"go/ast"
 )
 
-func checkSelectorExpr(selector *ast.SelectorExpr, env Env) (*SelectorExpr, []error) {
+func CheckSelectorExpr(selector *ast.SelectorExpr, env Env) (*SelectorExpr, []error) {
 	aexpr := &SelectorExpr{SelectorExpr: selector}
 
 	// First check if this is a package identifier

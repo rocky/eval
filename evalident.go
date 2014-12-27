@@ -4,7 +4,7 @@ import (
 	"reflect"
 )
 
-func evalIdent(ident *Ident, env Env) (reflect.Value, error) {
+func EvalIdent(ident *Ident, env Env) (reflect.Value, error) {
 	if ident.IsConst() {
 		return ident.Const(), nil
 	}
@@ -26,4 +26,3 @@ func evalIdent(ident *Ident, env Env) (reflect.Value, error) {
 	}
         panic(dytc("missing identifier '"+name+"'"))
 }
-

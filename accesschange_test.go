@@ -80,8 +80,8 @@ func myCheckSelectorExpr(selector *ast.SelectorExpr, env Env) (*SelectorExpr, []
 }
 
 func TestReplaceIdentLookup(t *testing.T) {
-	defer SetEvalIdent(evalIdent)
-	defer SetCheckIdent(checkIdent)
+	defer SetEvalIdent(EvalIdent)
+	defer SetCheckIdent(CheckIdent)
 	env := MakeSimpleEnv()
 	SetCheckIdent(myCheckIdent)
 	SetEvalIdent(myEvalIdent)
@@ -91,8 +91,8 @@ func TestReplaceIdentLookup(t *testing.T) {
 }
 
 func TestReplaceSelectorLookup(t *testing.T) {
-	defer SetCheckSelectorExpr(checkSelectorExpr)
-	defer SetEvalSelectorExpr(evalSelectorExpr)
+	defer SetCheckSelectorExpr(CheckSelectorExpr)
+	defer SetEvalSelectorExpr(EvalSelectorExpr)
 	SetCheckSelectorExpr(myCheckSelectorExpr)
 	SetEvalSelectorExpr(myEvalSelectorExpr)
 	env  := MakeSimpleEnv()

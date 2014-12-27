@@ -5,7 +5,7 @@ import (
 	"go/ast"
 )
 
-func checkIdent(ident *ast.Ident, env Env) (_ *Ident, errs []error) {
+func CheckIdent(ident *ast.Ident, env Env) (_ *Ident, errs []error) {
 	aexpr := &Ident{Ident: ident}
 	switch aexpr.Name {
 	case "nil":

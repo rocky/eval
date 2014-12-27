@@ -36,8 +36,8 @@ func SetEvalSelectorExpr(fn EvalSelectorExprFn) {
 }
 
 func init() {
-	SetCheckIdent(checkIdent)
-	SetEvalIdent(evalIdent)
-	SetCheckSelectorExpr(checkSelectorExpr)
-	SetEvalSelectorExpr(evalSelectorExpr)
+	SetCheckIdent(CheckIdent)
+	SetEvalIdent(EvalIdent)
+	SetCheckSelectorExpr(CheckSelectorExpr)
+	SetEvalSelectorExpr(EvalSelectorExpr)
 }

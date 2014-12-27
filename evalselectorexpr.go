@@ -4,7 +4,7 @@ import (
 	"reflect"
 )
 
-func evalSelectorExpr(selector *SelectorExpr, env Env) (reflect.Value, error) {
+func EvalSelectorExpr(selector *SelectorExpr, env Env) (reflect.Value, error) {
 
 	if selector.pkgName != "" {
 		vs, err := evalIdentFn(selector.Sel, env.Pkg(selector.pkgName))
