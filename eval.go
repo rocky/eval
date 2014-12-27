@@ -9,6 +9,13 @@ import (
 	"go/scanner"
 )
 
+// This value is the reflect value we return when we want to return nil.
+var EvalNil reflect.Value
+
+func init() {
+	EvalNil = reflect.Value{}
+}
+
 var emptyEnv Env = MakeSimpleEnv()
 
 func Eval(expr string) (result []reflect.Value, panik error, compileErrors []error) {

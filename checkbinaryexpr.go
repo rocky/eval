@@ -82,11 +82,11 @@ func checkBinaryExpr(binary *ast.BinaryExpr, env Env) (*BinaryExpr, []error) {
 				r = new(ConstNumber).Rsh(xx, uint(count))
 			}
 			if !xuntyped {
-				c, moreErrs := promoteConstToTyped(ConstShiftedInt, constValueOf(r), xt, aexpr)
+				c, moreErrs := promoteConstToTyped(ConstShiftedInt, ConstValueOf(r), xt, aexpr)
 				errs = append(errs, moreErrs...)
 				aexpr.constValue = c
 			} else {
-				aexpr.constValue = constValueOf(r)
+				aexpr.constValue = ConstValueOf(r)
 			}
 		}
 	} else if x.IsConst() && y.IsConst() {
@@ -259,23 +259,23 @@ func evalConstBinaryNumericExpr(binary *BinaryExpr, x, y *ConstNumber) (constVal
 	op := binary.Op()
 	switch op {
 	case token.ADD:
-		return constValueOf(new(ConstNumber).Add(x, y)), nil
+		return ConstValueOf(new(ConstNumber).Add(x, y)), nil
 	case token.SUB:
-		return constValueOf(new(ConstNumber).Sub(x, y)), nil
+		return ConstValueOf(new(ConstNumber).Sub(x, y)), nil
 	case token.MUL:
-		return constValueOf(new(ConstNumber).Mul(x, y)), nil
+		return ConstValueOf(new(ConstNumber).Mul(x, y)), nil
 	case token.QUO:
 		if y.Value.IsZero() {
 			return constValue{}, []error{ErrDivideByZero{binary}}
 		}
-		return constValueOf(new(ConstNumber).Quo(x, y)), nil
+		return ConstValueOf(new(ConstNumber).Quo(x, y)), nil
 	case token.REM:
 		if y.Value.IsZero() {
 			return constValue{}, []error{ErrDivideByZero{binary}}
 		} else if !(x.Type.IsIntegral() && y.Type.IsIntegral()) {
 			return constValue{}, []error{ErrInvalidBinaryOperation{binary}}
 		} else {
-			return constValueOf(new(ConstNumber).Rem(x, y)), nil
+			return ConstValueOf(new(ConstNumber).Rem(x, y)), nil
 		}
 	case token.AND, token.OR, token.XOR, token.AND_NOT:
 		if !(x.Type.IsIntegral() && y.Type.IsIntegral()) {
@@ -284,21 +284,21 @@ func evalConstBinaryNumericExpr(binary *BinaryExpr, x, y *ConstNumber) (constVal
 
 		switch op {
 		case token.AND:
-			return constValueOf(new(ConstNumber).And(x, y)), nil
+			return ConstValueOf(new(ConstNumber).And(x, y)), nil
 		case token.OR:
-			return constValueOf(new(ConstNumber).Or(x, y)), nil
+			return ConstValueOf(new(ConstNumber).Or(x, y)), nil
 		case token.XOR:
-			return constValueOf(new(ConstNumber).Xor(x, y)), nil
+			return ConstValueOf(new(ConstNumber).Xor(x, y)), nil
 		case token.AND_NOT:
-			return constValueOf(new(ConstNumber).AndNot(x, y)), nil
+			return ConstValueOf(new(ConstNumber).AndNot(x, y)), nil
 		default:
 			panic("go-interactive: impossible")
 		}
 
 	case token.EQL:
-		return constValueOf(x.Value.Equals(&y.Value)), nil
+		return ConstValueOf(x.Value.Equals(&y.Value)), nil
 	case token.NEQ:
-		return constValueOf(!x.Value.Equals(&y.Value)), nil
+		return ConstValueOf(!x.Value.Equals(&y.Value)), nil
 
 	case token.LEQ, token.GEQ, token.LSS, token.GTR:
 		var b bool
@@ -318,7 +318,7 @@ func evalConstBinaryNumericExpr(binary *BinaryExpr, x, y *ConstNumber) (constVal
 		case token.GTR:
 			b = cmp > 0
 		}
-		return constValueOf(b), errs
+		return ConstValueOf(b), errs
 	default:
 		return constValue{}, []error{ErrInvalidBinaryOperation{binary}}
 	}
@@ -327,19 +327,19 @@ func evalConstBinaryNumericExpr(binary *BinaryExpr, x, y *ConstNumber) (constVal
 func evalConstBinaryStringExpr(binary *BinaryExpr, x, y string) (constValue, []error) {
 	switch binary.Op() {
 	case token.ADD:
-		return constValueOf(x + y), nil
+		return ConstValueOf(x + y), nil
 	case token.EQL:
-		return constValueOf(x == y), nil
+		return ConstValueOf(x == y), nil
 	case token.NEQ:
-		return constValueOf(x != y), nil
+		return ConstValueOf(x != y), nil
 	case token.LEQ:
-		return constValueOf(x <= y), nil
+		return ConstValueOf(x <= y), nil
 	case token.GEQ:
-		return constValueOf(x >= y), nil
+		return ConstValueOf(x >= y), nil
 	case token.LSS:
-		return constValueOf(x < y), nil
+		return ConstValueOf(x < y), nil
 	case token.GTR:
-		return constValueOf(x > y), nil
+		return ConstValueOf(x > y), nil
 	default:
 		return constValue{}, []error{ErrInvalidBinaryOperation{binary}}
 	}
@@ -348,13 +348,13 @@ func evalConstBinaryStringExpr(binary *BinaryExpr, x, y string) (constValue, []e
 func evalConstBinaryBoolExpr(binary *BinaryExpr, x, y bool) (constValue, []error) {
 	switch binary.Op() {
 	case token.EQL:
-		return constValueOf(x == y), nil
+		return ConstValueOf(x == y), nil
 	case token.NEQ:
-		return constValueOf(x != y), nil
+		return ConstValueOf(x != y), nil
 	case token. LAND:
-		return constValueOf(x && y), nil
+		return ConstValueOf(x && y), nil
 	case token.LOR:
-		return constValueOf(x || y), nil
+		return ConstValueOf(x || y), nil
 	default:
 		return constValue{}, []error{ErrInvalidBinaryOperation{binary}}
 	}
@@ -415,7 +415,7 @@ func evalConstTypedUntypedBinaryExpr(binary *BinaryExpr, typedExpr, untypedExpr 
 
 		z, errs := evalConstBinaryNumericExpr(binary, xx, yy)
 		if errs != nil {
-			return constValueOf(z), append(xConvErrs, errs...)
+			return ConstValueOf(z), append(xConvErrs, errs...)
 		}
 		errs = append(xConvErrs, errs...)
 

@@ -78,7 +78,7 @@ func checkBuiltinComplex(call *CallExpr, env Env) (*CallExpr, []error) {
 			if reflect.Value(xc).IsValid() && reflect.Value(yc).IsValid() {
 				xf := float64(reflect.Value(xc).Float())
 				yf := float64(reflect.Value(yc).Float())
-				call.constValue = constValueOf(complex(xf, yf))
+				call.constValue = ConstValueOf(complex(xf, yf))
 				return call, errs
 			}
 		}
@@ -99,7 +99,7 @@ func checkBuiltinComplex(call *CallExpr, env Env) (*CallExpr, []error) {
 					if y.IsConst() {
 						xf := float32(xv.Float())
 						yf := float32(y.Const().Float())
-						call.constValue = constValueOf(complex(xf, yf))
+						call.constValue = ConstValueOf(complex(xf, yf))
 					}
 					return call, errs
 				} else if yt.Kind() == reflect.Float64 {
@@ -107,7 +107,7 @@ func checkBuiltinComplex(call *CallExpr, env Env) (*CallExpr, []error) {
 					if y.IsConst() {
 						xf := float64(xv.Float())
 						yf := float64(y.Const().Float())
-						call.constValue = constValueOf(complex(xf, yf))
+						call.constValue = ConstValueOf(complex(xf, yf))
 					}
 					return call, errs
 				}
@@ -138,7 +138,7 @@ func checkBuiltinComplex(call *CallExpr, env Env) (*CallExpr, []error) {
 					if x.IsConst() {
 						xf := float32(x.Const().Float())
 						yf := float32(yv.Float())
-						call.constValue = constValueOf(complex(xf, yf))
+						call.constValue = ConstValueOf(complex(xf, yf))
 					}
 					return call, errs
 				} else if xt.Kind() == reflect.Float64 {
@@ -146,7 +146,7 @@ func checkBuiltinComplex(call *CallExpr, env Env) (*CallExpr, []error) {
 					if x.IsConst() {
 						xf := float64(x.Const().Float())
 						yf := float64(yv.Float())
-						call.constValue = constValueOf(complex(xf, yf))
+						call.constValue = ConstValueOf(complex(xf, yf))
 					}
 					return call, errs
 				}
@@ -163,7 +163,7 @@ func checkBuiltinComplex(call *CallExpr, env Env) (*CallExpr, []error) {
 			if x.IsConst() && y.IsConst() {
 				xf := float32(x.Const().Float())
 				yf := float32(y.Const().Float())
-				call.constValue = constValueOf(complex(xf, yf))
+				call.constValue = ConstValueOf(complex(xf, yf))
 			}
 			return call, errs
 		} else if xt.Kind() == reflect.Float64 {
@@ -171,7 +171,7 @@ func checkBuiltinComplex(call *CallExpr, env Env) (*CallExpr, []error) {
 			if x.IsConst() && y.IsConst() {
 				xf := float64(x.Const().Float())
 				yf := float64(y.Const().Float())
-				call.constValue = constValueOf(complex(xf, yf))
+				call.constValue = ConstValueOf(complex(xf, yf))
 			}
 			return call, errs
 		}
@@ -220,9 +220,9 @@ func checkBuiltinRealImag(call *CallExpr, env Env, isReal bool) (*CallExpr, []er
 				call.knownType = knownType{f64}
 				c := complex128(reflect.Value(xc).Complex())
 				if isReal {
-					call.constValue = constValueOf(real(c))
+					call.constValue = ConstValueOf(real(c))
 				} else {
-					call.constValue = constValueOf(imag(c))
+					call.constValue = ConstValueOf(imag(c))
 				}
 				return call, errs
 			}
@@ -232,9 +232,9 @@ func checkBuiltinRealImag(call *CallExpr, env Env, isReal bool) (*CallExpr, []er
 		if x.IsConst() {
 			c := complex128(x.Const().Complex())
 			if isReal {
-				call.constValue = constValueOf(real(c))
+				call.constValue = ConstValueOf(real(c))
 			} else {
-				call.constValue = constValueOf(imag(c))
+				call.constValue = ConstValueOf(imag(c))
 			}
 		}
 		return call, errs
@@ -243,9 +243,9 @@ func checkBuiltinRealImag(call *CallExpr, env Env, isReal bool) (*CallExpr, []er
 		if x.IsConst() {
 			c := complex64(x.Const().Complex())
 			if isReal {
-				call.constValue = constValueOf(real(c))
+				call.constValue = ConstValueOf(real(c))
 			} else {
-				call.constValue = constValueOf(imag(c))
+				call.constValue = ConstValueOf(imag(c))
 			}
 		}
 		return call, errs
@@ -398,13 +398,13 @@ func checkBuiltinLenCap(call *CallExpr, env Env, isLen bool) (*CallExpr, []error
 		w := new(callRecvWalker)
 		walk(x, w)
 		if !*w {
-			call.constValue = constValueOf(xt.Len())
+			call.constValue = ConstValueOf(xt.Len())
 		}
 	case reflect.String:
 		if !isLen {
 			errs = append(errs, ErrBuiltinWrongArgType{x, call})
 		} else if x.IsConst() {
-			call.constValue = constValueOf(x.Const().Len())
+			call.constValue = ConstValueOf(x.Const().Len())
 		}
 	default:
 		errs = append(errs, ErrBuiltinWrongArgType{x, call})

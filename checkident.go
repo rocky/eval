@@ -9,15 +9,15 @@ func CheckIdent(ident *ast.Ident, env Env) (_ *Ident, errs []error) {
 	aexpr := &Ident{Ident: ident}
 	switch aexpr.Name {
 	case "nil":
-		aexpr.constValue = constValueOf(UntypedNil{})
+		aexpr.constValue = ConstValueOf(UntypedNil{})
 		aexpr.knownType = []reflect.Type{ConstNil}
 
 	case "true":
-		aexpr.constValue = constValueOf(true)
+		aexpr.constValue = ConstValueOf(true)
 		aexpr.knownType = []reflect.Type{ConstBool}
 
 	case "false":
-		aexpr.constValue = constValueOf(false)
+		aexpr.constValue = ConstValueOf(false)
 		aexpr.knownType = []reflect.Type{ConstBool}
 	default:
 		for searchEnv := env; searchEnv != nil; searchEnv = searchEnv.PopScope() {

@@ -98,14 +98,14 @@ func evalConstTypedUnaryExpr(unary *UnaryExpr, x Expr) (constValue, []error) {
 func evalConstUnaryNumericExpr(unary *UnaryExpr, x *ConstNumber) (constValue, []error) {
 	switch unary.Op {
 	case token.ADD:
-		return constValueOf(x), nil
+		return ConstValueOf(x), nil
 	case token.SUB:
 		zero := &ConstNumber{Type: x.Type}
-		return constValueOf(zero.Sub(zero, x)), nil
+		return ConstValueOf(zero.Sub(zero, x)), nil
 	case token.XOR:
 		if x.Type.IsIntegral() {
 			minusOne := NewConstInt64(-1)
-			return constValueOf(minusOne.Xor(minusOne, x)), nil
+			return ConstValueOf(minusOne.Xor(minusOne, x)), nil
 		}
 	}
 	return constValue{}, []error{ErrInvalidUnaryOperation{unary}}
@@ -114,7 +114,7 @@ func evalConstUnaryNumericExpr(unary *UnaryExpr, x *ConstNumber) (constValue, []
 func evalConstUnaryBoolExpr(unary *UnaryExpr, x bool) (constValue, []error) {
 	switch unary.Op {
 	case token.NOT:
-		return constValueOf(!x), nil
+		return ConstValueOf(!x), nil
 	default:
 		return constValue{}, []error{ErrInvalidUnaryOperation{unary}}
 	}

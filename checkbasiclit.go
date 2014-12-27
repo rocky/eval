@@ -18,7 +18,7 @@ func checkBasicLit(lit *ast.BasicLit, env Env) (*BasicLit, []error) {
 			// parser.ParseExpr() should raise a syntax error before we get here.
 			panic("go-interactive: bad char lit " + lit.Value)
 		} else {
-			aexpr.constValue = constValueOf(NewConstRune(r))
+			aexpr.constValue = ConstValueOf(NewConstRune(r))
 			aexpr.knownType = knownType{ConstRune}
 			return aexpr, nil
 		}
@@ -26,7 +26,7 @@ func checkBasicLit(lit *ast.BasicLit, env Env) (*BasicLit, []error) {
 		if str, err := strconv.Unquote(string(lit.Value)); err != nil {
 			return aexpr, []error{ErrBadBasicLit{aexpr}}
 		} else {
-			aexpr.constValue = constValueOf(str)
+			aexpr.constValue = ConstValueOf(str)
 			aexpr.knownType = knownType{ConstString}
 			return aexpr, nil
 		}
@@ -34,7 +34,7 @@ func checkBasicLit(lit *ast.BasicLit, env Env) (*BasicLit, []error) {
 		if i, ok := NewConstInteger(lit.Value); !ok {
 			return aexpr, []error{ErrBadBasicLit{aexpr}}
 		} else {
-			aexpr.constValue = constValueOf(i)
+			aexpr.constValue = ConstValueOf(i)
 			aexpr.knownType = knownType{ConstInt}
 			return aexpr, nil
 		}
@@ -42,7 +42,7 @@ func checkBasicLit(lit *ast.BasicLit, env Env) (*BasicLit, []error) {
 		if f, ok := NewConstFloat(lit.Value); !ok {
 			return aexpr, []error{ErrBadBasicLit{aexpr}}
 		} else {
-			aexpr.constValue = constValueOf(f)
+			aexpr.constValue = ConstValueOf(f)
 			aexpr.knownType = knownType{ConstFloat}
 			return aexpr, nil
 		}
@@ -50,7 +50,7 @@ func checkBasicLit(lit *ast.BasicLit, env Env) (*BasicLit, []error) {
 		if i, ok := NewConstImag(lit.Value); !ok {
 			return aexpr, []error{ErrBadBasicLit{aexpr}}
 		} else {
-			aexpr.constValue = constValueOf(i)
+			aexpr.constValue = ConstValueOf(i)
 			aexpr.knownType = knownType{ConstComplex}
 			return aexpr, nil
 		}

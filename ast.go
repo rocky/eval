@@ -420,7 +420,7 @@ func (e *ChanType) setKnownType(t knownType)       { e.knownType = t }
 
 // Does not assert that c is a valid const value type
 // Should be *ConstNumber, bool, or string
-func constValueOf(i interface{}) constValue {
+func ConstValueOf(i interface{}) constValue {
 	return constValue(reflect.ValueOf(i))
 }
 
@@ -710,4 +710,3 @@ func isTypeDisplayed(t reflect.Type) bool {
 	}
 	return true
 }
-

@@ -12,7 +12,6 @@ func SetCheckIdent(fn CheckIdentFn) {
 	checkIdentFn = fn
 }
 
-
 type EvalIdentFn func(ident *Ident, env Env) (reflect.Value, error)
 var evalIdentFn EvalIdentFn
 

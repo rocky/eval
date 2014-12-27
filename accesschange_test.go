@@ -9,17 +9,11 @@ import (
 	"testing"
 )
 
-var reflectNil reflect.Value
-
-func init() {
-	reflectNil = reflect.ValueOf((*int)(nil))
-}
-
 // Here's our custom ident lookup.
 func myEvalIdent(ident *Ident, env Env) (reflect.Value, error) {
 	name := ident.Name
 	if name == "nil" {
-		return reflectNil, nil
+		return EvalNil, nil
 	} else if name[0] == 'v' {
 		val := reflect.ValueOf(5)
 		return val, nil
@@ -41,7 +35,7 @@ func myCheckIdent(ident *ast.Ident, env Env) (_ *Ident, errs []error) {
 	aexpr := &Ident{Ident: ident}
 	name := aexpr.Name
 	if name == "nil" {
-		aexpr.constValue = constValueOf(UntypedNil{})
+		aexpr.constValue = ConstValueOf(UntypedNil{})
 		aexpr.knownType = []reflect.Type{ConstNil}
 		return aexpr, errs
 	} else if name[0] == 'v' {
