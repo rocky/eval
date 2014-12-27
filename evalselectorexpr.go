@@ -7,7 +7,7 @@ import (
 func evalSelectorExpr(selector *SelectorExpr, env Env) (reflect.Value, error) {
 
 	if selector.pkgName != "" {
-		vs, err := evalIdent(selector.Sel, env.Pkg(selector.pkgName))
+		vs, err := evalIdentFn(selector.Sel, env.Pkg(selector.pkgName))
 		return vs, err
 	}
 
@@ -29,4 +29,3 @@ func evalSelectorExpr(selector *SelectorExpr, env Env) (reflect.Value, error) {
 	}
 	return v.Method(selector.method), nil
 }
-

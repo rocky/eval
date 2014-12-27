@@ -1,96 +1,102 @@
 package eval
 
-/* TODO[crc] Determine what to do with the env lookup
-
 // Tests replacing the default identifier selection lookup value mechanism with
 // our own custom versions.
 
 import (
+	"go/ast"
 	"reflect"
 	"testing"
 )
 
+var reflectNil reflect.Value
+
+func init() {
+	reflectNil = reflect.ValueOf((*int)(nil))
+}
+
 // Here's our custom ident lookup.
-func MyEvalIdentExpr(ident *Ident, env Env) (
-	*reflect.Value, bool, error) {
+func myEvalIdent(ident *Ident, env Env) (reflect.Value, error) {
 	name := ident.Name
 	if name == "nil" {
-		return nil, false, nil
+		return reflectNil, nil
 	} else if name[0] == 'v' {
 		val := reflect.ValueOf(5)
-		return &val, true, nil
+		return val, nil
 	} else if name[0] == 'c' {
 		val := reflect.ValueOf("constant")
-		return &val, true, nil
+		return val, nil
 	} else if name[0] == 'c' {
 		val := reflect.ValueOf(true)
-		return &val, true, nil
+		return val, nil
 	} else {
 		val := reflect.ValueOf('x')
-		return &val, true, nil
+		return val, nil
+	}
+}
+
+
+// Here's our custom ident type check
+func myCheckIdent(ident *ast.Ident, env Env) (_ *Ident, errs []error) {
+	aexpr := &Ident{Ident: ident}
+	name := aexpr.Name
+	if name == "nil" {
+		aexpr.constValue = constValueOf(UntypedNil{})
+		aexpr.knownType = []reflect.Type{ConstNil}
+		return aexpr, errs
+	} else if name[0] == 'v' {
+		aexpr.knownType = knownType{i8}
+		aexpr.source = envVar
+		return aexpr, errs
+	} else if name[0] == 'c' {
+		aexpr.knownType = knownType{stringType}
+		aexpr.source = envConst
+		return aexpr, errs
+	} else if name == "bogus" {
+		aexpr.source = envConst
+		return aexpr, errs
+	} else {
+		aexpr.knownType = knownType{f32}
+		aexpr.source = envVar
+		return aexpr, errs
 	}
 }
 
 
 // Here's our custom selector lookup.
-func MyEvalSelectorExpr(selector *SelectorExpr, env Env) (
-	*reflect.Value, bool, error) {
-	var err error
-	var x *[]reflect.Value
-	if x, _, err = EvalExpr(selector.X, env); err != nil {
-		return nil, true, err
-	}
-	sel   := selector.Sel.Name
-	x0    := (*x)[0]
+func myEvalSelectorExpr(selector *SelectorExpr, env Env) (
+	reflect.Value, error) {
+	val := reflect.ValueOf("bogus")
+	return val, nil
+}
 
-	if x0.Kind() == reflect.Ptr {
-		// Special case for handling packages
-		if x0.Type() == reflect.TypeOf(Pkg(nil)) {
-			val := reflect.ValueOf("bogus")
-			return &val, true, nil
-		} else if !x0.IsNil() && x0.Elem().Kind() == reflect.Struct {
-			x0 = x0.Elem()
-		}
-	}
-
-	switch x0.Type().Kind() {
-	case reflect.Struct:
-		if v := x0.FieldByName(sel); v.IsValid() {
-			return &v, true, nil
-		} else if x0.CanAddr() {
-			if v := x0.Addr().MethodByName(sel); v.IsValid() {
-				return &v, true, nil
-			}
-		}
-		return nil, true, nil
-	case reflect.Interface:
-		if v := x0.MethodByName(sel); !v.IsValid() {
-			return &v, true, nil
-		} else {
-			return &v, true, nil
-		}
-	default:
-		return nil, true, nil
-	}
+// Here's our custom selector type check
+func myCheckSelectorExpr(selector *ast.SelectorExpr, env Env) (*SelectorExpr, []error) {
+	aexpr := &SelectorExpr{SelectorExpr: selector}
+	sel, errs := myCheckIdent(selector.Sel, env)
+	aexpr.constValue = sel.constValue
+	aexpr.knownType = sel.knownType
+	return aexpr, errs
 }
 
 func TestReplaceIdentLookup(t *testing.T) {
-	defer SetEvalIdentExprCallback(EvalIdentExpr)
+	defer SetEvalIdent(evalIdent)
+	defer SetCheckIdent(checkIdent)
 	env := MakeSimpleEnv()
-	SetEvalIdentExprCallback(MyEvalIdentExpr)
+	SetCheckIdent(myCheckIdent)
+	SetEvalIdent(myEvalIdent)
 	expectResult(t, "fdafdsa", env, 'x')
 	expectResult(t, "c + \" value\"", env, "constant value")
 
 }
 
-
 func TestReplaceSelectorLookup(t *testing.T) {
-	defer SetEvalSelectorExprCallback(EvalSelectorExpr)
+	defer SetCheckSelectorExpr(checkSelectorExpr)
+	defer SetEvalSelectorExpr(evalSelectorExpr)
+	SetCheckSelectorExpr(myCheckSelectorExpr)
+	SetEvalSelectorExpr(myEvalSelectorExpr)
 	env  := MakeSimpleEnv()
 	pkg := MakeSimpleEnv()
 	env.Pkgs["bogusPackage"] = pkg
-	SetEvalSelectorExprCallback(MyEvalSelectorExpr)
 	expectResult(t, "bogusPackage.something", env, "bogus")
-
 }
-*/

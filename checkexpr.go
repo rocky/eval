@@ -26,7 +26,7 @@ func CheckExpr(expr ast.Expr, env Env) (Expr, []error) {
 	case *ast.BadExpr:
 		return &BadExpr{BadExpr: expr}, nil
 	case *ast.Ident:
-		return checkIdent(expr, env)
+		return checkIdentFn(expr, env)
 	case *ast.Ellipsis:
 		return &Ellipsis{Ellipsis: expr}, nil
 	case *ast.BasicLit:
@@ -38,7 +38,7 @@ func CheckExpr(expr ast.Expr, env Env) (Expr, []error) {
 	case *ast.ParenExpr:
 		return checkParenExpr(expr, env)
 	case *ast.SelectorExpr:
-		return checkSelectorExpr(expr, env)
+		return checkSelectorExprFn(expr, env)
 	case *ast.IndexExpr:
 		return checkIndexExpr(expr, env)
 	case *ast.SliceExpr:

@@ -5,7 +5,7 @@ import (
 )
 
 // EvalExpr is the main function to call to evaluate an ast-parsed
-// expression, expr. 
+// expression, expr.
 // Parameter env, contains an evaluation environment from
 // which to get reflect.Values from. Note however that env can be
 // subverted somewhat by supplying callback hooks routines which
@@ -13,7 +13,7 @@ import (
 func EvalExpr(expr Expr, env Env) ([]reflect.Value, error) {
 	switch node := expr.(type) {
 	case *Ident:
-		v, err := evalIdent(node, env)
+		v, err := evalIdentFn(node, env)
 		return []reflect.Value{v}, err
 	case *BasicLit:
 		v, err := evalBasicLit(node)
@@ -27,7 +27,7 @@ func EvalExpr(expr Expr, env Env) ([]reflect.Value, error) {
 	case *ParenExpr:
 		return EvalExpr(node.X, env)
 	case *SelectorExpr:
-		v, err := evalSelectorExpr(node, env)
+		v, err := evalSelectorExprFn(node, env)
 		return []reflect.Value{v}, err
 	case *IndexExpr:
 		return evalIndexExpr(node, env)

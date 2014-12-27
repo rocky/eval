@@ -163,4 +163,3 @@ func typesEqual(expected, actual reflect.Type) bool {
 	}
 	return reflect.DeepEqual(expected, unwrapped)
 }
-

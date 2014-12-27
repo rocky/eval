@@ -12,7 +12,7 @@ func checkSelectorExpr(selector *ast.SelectorExpr, env Env) (*SelectorExpr, []er
 	if ident, ok := selector.X.(*ast.Ident); ok {
 		if pkg := env.Pkg(ident.Name); pkg != nil {
 			// Lookup this ident in the context of the package.
-			sel, errs := checkIdent(aexpr.SelectorExpr.Sel, pkg)
+			sel, errs := checkIdentFn(aexpr.SelectorExpr.Sel, pkg)
 			if len(errs) == 1 {
 				if undefined, ok := (errs[0]).(ErrUndefined); ok {
 					undefined.Expr = aexpr
