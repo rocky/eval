@@ -35,25 +35,27 @@ func myCheckIdent(ident *ast.Ident, env Env) (_ *Ident, errs []error) {
 	aexpr := &Ident{Ident: ident}
 	name := aexpr.Name
 	if name == "nil" {
-		aexpr.constValue = ConstValueOf(UntypedNil{})
-		aexpr.knownType = []reflect.Type{ConstNil}
-		return aexpr, errs
+		aexpr.SetConstValue(ConstValueOf(UntypedNil{}))
+		aexpr.SetKnownType([]reflect.Type{ConstNil})
+	} else if name ==  "true" {
+		aexpr.SetConstValue(ConstValueOf(true))
+		aexpr.SetKnownType([]reflect.Type{ConstBool})
+	} else if name ==  "false" {
+		aexpr.SetConstValue(ConstValueOf(false))
+		aexpr.SetKnownType([]reflect.Type{ConstBool})
 	} else if name[0] == 'v' {
-		aexpr.knownType = knownType{i8}
-		aexpr.source = EnvVar
-		return aexpr, errs
+		aexpr.SetConstValue(ConstValueOf(true))
+		aexpr.SetKnownType([]reflect.Type{ConstBool})
 	} else if name[0] == 'c' {
 		aexpr.knownType = knownType{stringType}
 		aexpr.source = EnvConst
-		return aexpr, errs
 	} else if name == "bogus" {
 		aexpr.source = EnvConst
-		return aexpr, errs
 	} else {
 		aexpr.knownType = knownType{f32}
 		aexpr.source = EnvVar
-		return aexpr, errs
 	}
+	return aexpr, errs
 }
 
 
@@ -78,6 +80,9 @@ func TestReplaceIdentLookup(t *testing.T) {
 	defer SetCheckIdent(CheckIdent)
 	env := MakeSimpleEnv()
 	SetCheckIdent(myCheckIdent)
+	expectResult(t, "true || false", env, true)
+	expectResult(t, "true && false", env, false)
+
 	SetEvalIdent(myEvalIdent)
 	expectResult(t, "fdafdsa", env, 'x')
 	expectResult(t, "c + \" value\"", env, "constant value")

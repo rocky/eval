@@ -56,4 +56,3 @@ func ExampleFullApi() {
 		fmt.Printf("Expression '%s' yielded '%+v'\n", expr, results[0].Interface())
 	}
 }
-

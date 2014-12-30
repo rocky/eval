@@ -711,14 +711,6 @@ func isTypeDisplayed(t reflect.Type) bool {
 	return true
 }
 
-func (id Ident) SetKnownType(t reflect.Type) {
-	id.knownType = knownType{t}
-}
-
-func (id Ident) SetConstValue(v reflect.Value) {
-	id.constValue = ConstValueOf(v)
-}
-
-func (id Ident) SetSource(s EnvSource) {
-	id.source = s
-}
+func (id *Ident) SetKnownType(t []reflect.Type) { id.knownType = t }
+func (id *Ident) SetConstValue(c constValue) { 	id.constValue = c }
+func (id *Ident) SetSource(s EnvSource) { id.source = s }
