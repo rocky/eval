@@ -4,81 +4,95 @@
 package main
 
 import (
-	"fmt"
+	"go/ast"
 	"reflect"
-	"strings"
-	"go/parser"
-	"github.com/0xfaded/eval"
+	"fmt"
+	"github.com/rocky/eval"
 )
 
-func expectResult(expr string, env eval.Env, expected interface{}) {
-	if e, err := parser.ParseExpr(expr); err != nil {
-		fmt.Printf("Failed to parse expression '%s' (%v)\n", expr, err)
-		return
-	} else if cexpr, errs := eval.CheckExpr(e, env); len(errs) != 0 {
-		fmt.Printf("Error checking expression '%s' (%v)\n", expr, errs)
-	} else if results, err := eval.EvalExpr(cexpr, env); err != nil {
-		fmt.Printf("Error evaluating expression '%s' (%v)\n", expr, err)
-		return
+// Here's our custom ident lookup.
+func EvalIdent(ident *eval.Ident, env eval.Env) (reflect.Value, error) {
+	println("Evaldent called")
+	name := ident.Name
+	if name == "nil" {
+		return eval.EvalNil, nil
+	} else if name[0] == 'v' {
+		val := reflect.ValueOf(5)
+		return val, nil
+	} else if name[0] == 'c' {
+		val := reflect.ValueOf("constant")
+		return val, nil
+	} else if name[0] == 'c' {
+		val := reflect.ValueOf(true)
+		return val, nil
 	} else {
-		fmt.Printf("Expression '%s' yielded '%+v', expected '%+v'\n",
-			expr, results[0].Interface(), expected)
+		val := reflect.ValueOf('x')
+		return val, nil
 	}
 }
 
-type CustomEnv struct {
-	// Encapsulate the default functionality
-	eval.Env
-}
-
-// At a minimum, You will probably want to define PushScope and PopScope
-func (env *CustomEnv) PushScope() eval.Env {
-	// The newly created underlying
-	top := env.Env.PushScope()
-
-	// Wrap the env and return it
-	return &CustomEnv{top}
-}
-
-func (env *CustomEnv) PopScope() eval.Env {
-	if top := env.Env.PopScope(); top == nil {
-		return nil
-	} else {
-		return &CustomEnv{top}
+// Here's our custom ident type check
+func CheckIdent(ident *ast.Ident, env eval.Env) (_ *eval.Ident, errs []error) {
+	println("CheckIdent called")
+	aexpr := &eval.Ident{Ident: ident}
+	name := aexpr.Name
+	switch name {
+	case "nil":
+		aexpr.SetConstValue(eval.ConstValueOf(eval.UntypedNil{}))
+		aexpr.SetKnownType([]reflect.Type{eval.ConstNil})
+		return aexpr, errs
+	case "true":
+		aexpr.SetConstValue(eval.ConstValueOf(true))
+		aexpr.SetKnownType([]reflect.Type{eval.ConstBool})
+		return aexpr, errs
+	case "false":
+		aexpr.SetConstValue(eval.ConstValueOf(false))
+		aexpr.SetKnownType([]reflect.Type{eval.ConstBool})
+	default:
+		errs = append(errs, eval.ErrUndefined{aexpr})
+		return aexpr, errs
 	}
+	return aexpr, errs
 }
 
-// Our custom Var will add one to any and all ints
-func (env *CustomEnv) Var(ident string) reflect.Value {
-	// Note that variables are always pointer values.
-	if v := env.Env.Var(ident); v.IsValid() && v.Type().Elem().Kind() == reflect.Int {
-		i := v.Elem().Int()
-		plusOne := reflect.New(v.Type().Elem()).Elem()
-		plusOne.Set(reflect.ValueOf(int(i + 1)))
-		return plusOne.Addr()
-	} else {
-		return v
-	}
-}
+var evalEnv eval.Env = eval.MakeSimpleEnv()
 
-// Our custom Const will lowercase all strings
-func (env *CustomEnv) Const(ident string) reflect.Value {
-	if v := env.Env.Const(ident); v.IsValid() && v.Type().Kind() == reflect.String {
-		s := v.String()
-		return(reflect.ValueOf(strings.ToLower(s)))
+func EvalExpr(expr string) ([]reflect.Value, error) {
+	results, panik, compileErrs := eval.EvalEnv(expr, evalEnv)
+	if compileErrs != nil {
+		println("compileErr != nil", )
+		for _, err := range(compileErrs) {
+			fmt.Printf("+++ %T\n", err)
+			fmt.Printf("+++2 %v\n", err)
+		}
+	} else if panik != nil {
+		println("panic != nil")
+		for _, err := range(compileErrs) {
+			fmt.Println(err.Error())
+		}
 	} else {
-		return v
+		println("ok")
+		return results, nil
 	}
+	return nil, nil
 }
 
 func main() {
-	simpleEnv := eval.MakeSimpleEnv()
-	v := 4
-	c := "CONSTANT"
-	simpleEnv.Vars["v"] = reflect.ValueOf(&v)
-	simpleEnv.Consts["c"] = reflect.ValueOf(c)
-	env := &CustomEnv{simpleEnv}
-	expectResult("v + 1", env, "6")
-	expectResult("c + \" value\"", env, "constant value")
+	if results, err := EvalExpr("true"); err == nil {
+		fmt.Printf("%v\n", results[0].Interface())
+	}
+	eval.SetCheckIdent(CheckIdent)
+	// eval.SetEvalIdent(EvalIdent)
+	if results, err := EvalExpr("true"); err == nil {
+		fmt.Printf("%v\n", results[0].Interface())
+	}
+	if results, err := EvalExpr("true || false"); err == nil {
+	 	println("true || false")
+	 	fmt.Printf("%v\n", results[0].Interface())
+	}
+	if results, err := EvalExpr("true && false"); err == nil {
+		println("true && false")
+		fmt.Printf("%v\n", results[0].Interface())
+	}
 
 }
