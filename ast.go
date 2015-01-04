@@ -714,3 +714,8 @@ func isTypeDisplayed(t reflect.Type) bool {
 func (id *Ident) SetKnownType(t []reflect.Type) { id.knownType = t }
 func (id *Ident) SetConstValue(c constValue) { 	id.constValue = c }
 func (id *Ident) SetSource(s EnvSource) { id.source = s }
+func (id *Ident) Source() EnvSource { return id.source }
+func (s  *SelectorExpr) PkgName() string { return s.pkgName }
+func (s  *SelectorExpr) Field() []int { return s.field }
+func (s  *SelectorExpr) Method() int { return s.method }
+func (s  *SelectorExpr) IsPtrReceiver() bool { return s.isPtrReceiver }
