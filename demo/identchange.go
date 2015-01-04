@@ -162,7 +162,7 @@ func EvalExpr(expr string) ([]reflect.Value, error) {
 			fmt.Println(err.Error())
 		}
 	} else if panik != nil {
-		fmt.Printf("Evaluation panic: %s\n", err.Error())
+		fmt.Printf("Evaluation panic: %s\n", panik.Error())
 	} else {
 		return results, nil
 	}
