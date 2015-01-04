@@ -51,6 +51,8 @@ type Env interface {
 
 	// Add pkg to the root scope. It is up to the implementation how to handle duplicate identifiers.
 	AddPkg(pkg string, p Env)
+
+	Path() string
 }
 
 func MakeSimpleEnv() *SimpleEnv {
@@ -65,7 +67,7 @@ func MakeSimpleEnv() *SimpleEnv {
 
 type SimpleEnv struct {
 	// path relative to GOROOT or GOPATH. e.g. github.com/0xfaded/eval
-	Path string
+	path string
 	Parent *SimpleEnv
 	Vars map[string]reflect.Value
 	Funcs map[string]reflect.Value
@@ -132,4 +134,8 @@ func (env *SimpleEnv) AddPkg(pkg string, p Env) {
 		env = env.Parent
 	}
 	env.Pkgs[pkg] = p
+}
+
+func (env *SimpleEnv) Path() string {
+	return env.path
 }

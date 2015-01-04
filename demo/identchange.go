@@ -126,7 +126,7 @@ func EvalSelectorExpr(selector *eval.SelectorExpr, env eval.Env) (reflect.Value,
 
 	if pkgName := selector.PkgName(); pkgName != "" {
 		if vs, err := pkgEvalIdent(selector.Sel, env.Pkg(pkgName)); err != nil {
-			return EvalIdent(selector.Sel, env.Pkg(selector.PkgName()))
+			return EvalIdent(selector.Sel, env.Pkg(pkgName))
 		} else {
 			return vs, err
 		}
