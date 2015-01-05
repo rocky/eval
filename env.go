@@ -76,36 +76,36 @@ type SimpleEnv struct {
 	Pkgs map[string]Env
 }
 
-func (env *SimpleEnv) Var(ident string) reflect.Value {
+func (env SimpleEnv) Var(ident string) reflect.Value {
 	return env.Vars[ident]
 }
 
-func (env *SimpleEnv) Func(ident string) reflect.Value {
+func (env SimpleEnv) Func(ident string) reflect.Value {
 	return env.Funcs[ident]
 }
 
-func (env *SimpleEnv) Const(ident string) reflect.Value {
+func (env SimpleEnv) Const(ident string) reflect.Value {
 	return env.Consts[ident]
 }
 
-func (env *SimpleEnv) Type(ident string) reflect.Type {
+func (env SimpleEnv) Type(ident string) reflect.Type {
 	return env.Types[ident]
 }
 
-func (env *SimpleEnv) Pkg(pkg string) Env {
+func (env SimpleEnv) Pkg(pkg string) Env {
 	for env.Parent != nil {
-		env = env.Parent
+		env = *env.Parent
 	}
 	return env.Pkgs[pkg]
 }
 
-func (env *SimpleEnv) PushScope() Env {
+func (env SimpleEnv) PushScope() Env {
 	top := MakeSimpleEnv()
-	top.Parent = env
+	top.Parent = &env
 	return top
 }
 
-func (env *SimpleEnv) PopScope() Env {
+func (env SimpleEnv) PopScope() Env {
 	if env.Parent == nil {
 		return nil
 	} else {
@@ -113,29 +113,29 @@ func (env *SimpleEnv) PopScope() Env {
 	}
 }
 
-func (env *SimpleEnv) AddVar(ident string, v reflect.Value) {
+func (env SimpleEnv) AddVar(ident string, v reflect.Value) {
 	env.Vars[ident] = v
 }
 
-func (env *SimpleEnv) AddFunc(ident string, f reflect.Value) {
+func (env SimpleEnv) AddFunc(ident string, f reflect.Value) {
 	env.Funcs[ident] = f
 }
 
-func (env *SimpleEnv) AddConst(ident string, c reflect.Value) {
+func (env SimpleEnv) AddConst(ident string, c reflect.Value) {
 	env.Consts[ident] = c
 }
 
-func (env *SimpleEnv) AddType(ident string, t reflect.Type) {
+func (env SimpleEnv) AddType(ident string, t reflect.Type) {
 	env.Types[ident] = t
 }
 
-func (env *SimpleEnv) AddPkg(pkg string, p Env) {
+func (env SimpleEnv) AddPkg(pkg string, p Env) {
 	for env.Parent != nil {
-		env = env.Parent
+		env = *env.Parent
 	}
 	env.Pkgs[pkg] = p
 }
 
-func (env *SimpleEnv) Path() string {
+func (env SimpleEnv) Path() string {
 	return env.path
 }
